@@ -1,6 +1,7 @@
 #include <iostream>
-#include<opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>
 #include <vector>
+#include <math.h>
 
 using namespace std;
 using namespace cv;
@@ -32,27 +33,50 @@ int main()
 	    int maxY = 0, minY = 2000;
 	    for(int j = 0; j < out.size(); j++)
 	    {
-		if(out[i].x > maxX)
+		if(out[j].x > maxX)
 		{
-		    maxX = out[i].x;
+		    maxX = out[j].x;
 		}
-		if(out[i].x < minX)
+		if(out[j].x < minX)
 		{
-		    minX = out[i].x;
+		    minX = out[j].x;
 		}
-		if(out[i].y > maxY)
+		if(out[j].y > maxY)
 		{
-		    maxY = out[i].y;
+		    maxY = out[j].y;
 		}
-		if(out[i].y < minY)
+		if(out[j].y < minY)
 		{
-		    minY = out[i].y;
+		    minY = out[j].y;
 		}
 	    }
 	    double width = maxX - minX;
 	    cout<< "Dist: " << 48/width<< "m"<<endl;
+	    cout<<"X Azimuth: "<<azimuth(maxX,minX,img.size().width,48/width)<<endl;
+	    cout<<"Y Azimuth: "<<azimuth(maxY,minY,img.size().width,48/width)<<endl;
 	}
     }
     waitKey(0);
     return 0;
+}
+
+int azimuth(double p1, double p2,double imgWidth,double dist)
+{
+    double angle;
+    imgWidth = imgWidth/2;
+    double average = p1 + p2;
+    average = average/2;
+    imgWidth = average - imgWidth;
+    imgWidth = imgWidth/480;
+    imgWidth = imgWidth * dist;
+    angle = arcTan(dist,imgWidth);
+    return angle;
+}
+
+int arcTan(double dist, double imgWidth)
+{
+    double frac, angle;
+    frac = imgWidth/dist;
+    angle = atan(frac) * 180/ 3.14159;
+    return angle;
 }
